@@ -1,80 +1,188 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Open City V7.1</title>
+
+<title>Open City V6 Fixed</title>
 
 <style>
-*{box-sizing:border-box}
-html,body{
- margin:0;width:100%;height:100%;overflow:hidden;
- background:#79a9c8;font-family:Arial;touch-action:none
+*{
+ box-sizing:border-box;
+ -webkit-tap-highlight-color:transparent
 }
-canvas{display:block}
+
+html,body{
+ margin:0;
+ width:100%;
+ height:100%;
+ overflow:hidden;
+ background:#82b5d4;
+ font-family:Arial,sans-serif;
+ touch-action:none
+}
+
+canvas{
+ display:block
+}
+
+/* HUD */
 
 #hud{
- position:fixed;top:8px;left:8px;color:#fff;
- text-shadow:2px 2px 3px #000;z-index:20;font-size:13px
+ position:fixed;
+ top:8px;
+ left:8px;
+ color:white;
+ text-shadow:2px 2px 3px #000;
+ z-index:100;
+ font-size:13px;
+ pointer-events:none
 }
-#hud b{font-size:18px}
 
-#map{
- position:fixed;right:8px;top:8px;width:120px;height:120px;
- border:2px solid #fff;border-radius:8px;z-index:20
+#hud b{
+ font-size:19px
 }
+
+/* CROSSHAIR */
 
 #cross{
- position:fixed;left:50%;top:50%;
+ position:fixed;
+ left:50%;
+ top:50%;
  transform:translate(-50%,-50%);
- color:#fff;font-size:24px;z-index:5
+ color:white;
+ font-size:24px;
+ z-index:120;
+ pointer-events:none
 }
 
+/* MINIMAP */
+
+#map{
+ position:fixed;
+ right:8px;
+ top:8px;
+ width:120px;
+ height:120px;
+ background:#172017;
+ border:2px solid white;
+ border-radius:8px;
+ z-index:110
+}
+
+/* MESSAGE */
+
+#msg{
+ position:fixed;
+ left:50%;
+ top:43%;
+ transform:translate(-50%,-50%);
+ color:white;
+ font-size:24px;
+ font-weight:bold;
+ text-align:center;
+ text-shadow:2px 2px 5px #000;
+ z-index:200;
+ display:none;
+ pointer-events:none
+}
+
+/* JOYSTICK */
+
 #joy{
- position:fixed;left:15px;bottom:15px;
- width:125px;height:125px;border:3px solid #ffffff88;
- border-radius:50%;background:#0004;z-index:30
+ position:fixed;
+ left:16px;
+ bottom:16px;
+ width:125px;
+ height:125px;
+ border:3px solid #ffffff88;
+ border-radius:50%;
+ background:#0004;
+ z-index:150
 }
 
 #stick{
- position:absolute;left:33px;top:33px;
- width:52px;height:52px;border-radius:50%;background:#fff9
+ position:absolute;
+ width:52px;
+ height:52px;
+ left:33px;
+ top:33px;
+ border-radius:50%;
+ background:#fff9
 }
+
+/* LOOK AREA */
 
 #look{
- position:fixed;right:0;top:0;width:58%;height:65%;z-index:10
+ position:fixed;
+ right:0;
+ top:0;
+ width:58%;
+ height:65%;
+ z-index:90
 }
 
-#buttons,#drive{
- position:fixed;right:8px;bottom:10px;
- width:245px;display:flex;gap:6px;flex-wrap:wrap;z-index:40
+/* BUTTONS */
+
+#buttons,
+#drive{
+ position:fixed;
+ right:10px;
+ bottom:12px;
+ z-index:160;
+ width:235px;
+ display:flex;
+ gap:6px;
+ flex-wrap:wrap
 }
 
-#drive{display:none}
+#drive{
+ display:none
+}
 
 button{
- width:60px;height:60px;border:2px solid #fff9;
- border-radius:50%;background:#000b;color:#fff;
- font-weight:bold;font-size:10px
+ width:61px;
+ height:61px;
+ border:2px solid #fff9;
+ border-radius:50%;
+ background:#0009;
+ color:#fff;
+ font-weight:bold;
+ font-size:10px
 }
 
-#fire{background:#a00000dd}
-#enter{display:none;background:#087cdd}
-
-#save,#load{
- position:fixed;left:8px;width:70px;height:35px;
- border-radius:8px;font-size:10px;z-index:50
+button:active{
+ transform:scale(.94)
 }
 
-#save{bottom:150px}
-#load{bottom:108px}
+#fire{
+ background:#a00000dd
+}
 
-#msg{
- position:fixed;left:50%;top:43%;
- transform:translate(-50%,-50%);
- color:#fff;font-size:23px;font-weight:bold;
- text-align:center;text-shadow:2px 2px 5px #000;
- z-index:60;display:none;white-space:nowrap
+#enter{
+ display:none;
+ background:#087cdd
+}
+
+/* SAVE LOAD */
+
+#save,
+#load{
+ position:fixed;
+ left:8px;
+ z-index:170;
+ width:70px;
+ height:35px;
+ border-radius:8px;
+ font-size:10px
+}
+
+#save{
+ bottom:150px
+}
+
+#load{
+ bottom:108px
 }
 </style>
 </head>
@@ -82,22 +190,23 @@ button{
 <body>
 
 <div id="hud">
-<b>OPEN CITY V7.1</b><br>
+<b>OPEN CITY V6</b><br>
+
 ❤️ <span id="hp">100</span>
 &nbsp; 🔫 <span id="ammo">30</span>
-&nbsp; 💵 $<span id="money">1000</span><br>
+&nbsp; 💵 $<span id="money">500</span><br>
 
 ⭐ <span id="wanted">0</span>
 &nbsp; 🚓 <span id="police">0</span>
 &nbsp; 🚁 <span id="heli">0</span><br>
 
-🕐 <span id="clock">08:00</span>
+🌤️ <span id="clock">08:00</span>
 &nbsp; 🔫 <span id="weapon">PISTOL</span><br>
 
-📋 <span id="mission">Reach the blue marker</span>
+<div id="mission">MISSION</div>
 </div>
 
-<canvas id="map"></canvas>
+<canvas id="map" width="120" height="120"></canvas>
 
 <div id="cross">+</div>
 <div id="msg"></div>
@@ -112,77 +221,176 @@ button{
 <div id="look"></div>
 
 <div id="buttons">
-<button id="fire">FIRE</button>
-<button id="jump">JUMP</button>
-<button id="run">RUN</button>
-<button id="shopBtn">SHOP</button>
-<button id="use">USE</button>
-<button id="enter">ENTER</button>
+
+ <button id="fire">FIRE</button>
+ <button id="jump">JUMP</button>
+ <button id="run">RUN</button>
+ <button id="weaponBtn">WEAPON</button>
+ <button id="enter">ENTER</button>
+
 </div>
 
 <div id="drive">
-<button id="gas">GAS</button>
-<button id="brake">BRAKE</button>
-<button id="exit">EXIT</button>
+
+ <button id="gas">GAS</button>
+ <button id="brake">BRAKE</button>
+ <button id="exit">EXIT</button>
+
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+<!-- THREE.JS -->
+<script
+ src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"
+ onerror="this.onerror=null;this.src='https://unpkg.com/three@0.160.0/build/three.min.js'">
+</script>
+
 
 <script>
 
+/* =========================================================
+   CHECK THREE.JS
+========================================================= */
+
+if(!window.THREE){
+
+ document.getElementById("msg").innerHTML=
+  "3D ENGINE FAILED<br>CHECK INTERNET";
+
+ document.getElementById("msg").style.display="block";
+
+ throw new Error("Three.js failed to load");
+}
+
+
+/* =========================================================
+   ENGINE
+========================================================= */
+
 const scene=new THREE.Scene();
 
-const camera=new THREE.PerspectiveCamera(
-65,
-innerWidth/innerHeight,
-.1,
-500
+scene.background=
+ new THREE.Color(0x82b5d4);
+
+scene.fog=
+ new THREE.Fog(
+  0x82b5d4,
+  70,
+  300
 );
 
-const renderer=new THREE.WebGLRenderer({
-antialias:true,
-powerPreference:"high-performance"
-});
 
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
-renderer.setSize(innerWidth,innerHeight);
-document.body.appendChild(renderer.domElement);
+const camera=
+ new THREE.PerspectiveCamera(
+  65,
+  innerWidth/innerHeight,
+  .1,
+  500
+);
 
-scene.background=new THREE.Color(0x82b5d4);
-scene.fog=new THREE.Fog(0x82b5d4,70,300);
 
-scene.add(
+let renderer;
+
+try{
+
+ renderer=
+  new THREE.WebGLRenderer({
+   antialias:false,
+   powerPreference:"high-performance"
+  });
+
+}catch(e){
+
+ document.getElementById("msg").innerHTML=
+  "WEBGL NOT AVAILABLE";
+
+ document.getElementById("msg").style.display=
+  "block";
+
+ throw e;
+}
+
+
+renderer.setPixelRatio(1);
+
+renderer.setSize(
+ innerWidth,
+ innerHeight
+);
+
+renderer.domElement.style.position=
+ "fixed";
+
+renderer.domElement.style.left="0";
+renderer.domElement.style.top="0";
+renderer.domElement.style.zIndex="1";
+
+document.body.insertBefore(
+ renderer.domElement,
+ document.body.firstChild
+);
+
+
+/* =========================================================
+   LIGHTS
+========================================================= */
+
+const hemi=
  new THREE.HemisphereLight(
   0xffffff,
   0x405040,
-  1.6
- )
+  1.5
 );
 
-const sun=new THREE.DirectionalLight(
- 0xffffff,
- 1.8
+scene.add(hemi);
+
+
+const sun=
+ new THREE.DirectionalLight(
+  0xffffff,
+  1.8
 );
 
-sun.position.set(80,120,50);
+sun.position.set(
+ 80,
+ 120,
+ 50
+);
+
 scene.add(sun);
 
 
-function box(w,h,d,c,x,y,z,p=scene){
+/* =========================================================
+   HELPERS
+========================================================= */
 
- let m=new THREE.Mesh(
-  new THREE.BoxGeometry(w,h,d),
-  new THREE.MeshStandardMaterial({color:c})
+function cube(
+ w,h,d,
+ color,
+ x,y,z,
+ parent=scene
+){
+
+ const m=
+  new THREE.Mesh(
+   new THREE.BoxGeometry(w,h,d),
+   new THREE.MeshStandardMaterial({
+    color:color
+   })
+  );
+
+ m.position.set(
+  x,y,z
  );
 
- m.position.set(x,y,z);
- p.add(m);
+ parent.add(m);
 
  return m;
 }
 
 
-function d(a,b){
+function dist(a,b){
+
  return Math.hypot(
   a.position.x-b.position.x,
   a.position.z-b.position.z
@@ -190,171 +398,308 @@ function d(a,b){
 }
 
 
-function msg(t){
+/* =========================================================
+   GROUND
+========================================================= */
 
- let m=document.getElementById("msg");
+const ground=
+ new THREE.Mesh(
+  new THREE.PlaneGeometry(
+   400,
+   400
+  ),
+  new THREE.MeshStandardMaterial({
+   color:0x39783c
+  })
+ );
 
- m.innerHTML=t;
- m.style.display="block";
+ground.rotation.x=
+ -Math.PI/2;
 
- clearTimeout(msg.t);
+scene.add(ground);
 
- msg.t=setTimeout(
-  ()=>m.style.display="none",
-  1100
+
+/* =========================================================
+   ROADS
+========================================================= */
+
+for(
+ let x=-80;
+ x<=80;
+ x+=40
+){
+
+ cube(
+  12,.12,200,
+  0x303236,
+  x,.05,0
+ );
+
+ cube(
+  1,.13,200,
+  0xaaaaaa,
+  x-6,.08,0
+ );
+
+ cube(
+  1,.13,200,
+  0xaaaaaa,
+  x+6,.08,0
  );
 }
 
 
-/* WORLD */
+for(
+ let z=-80;
+ z<=80;
+ z+=40
+){
 
-const ground=new THREE.Mesh(
- new THREE.PlaneGeometry(400,400),
- new THREE.MeshStandardMaterial({color:0x39783c})
-);
+ cube(
+  200,.12,12,
+  0x303236,
+  0,.05,z
+ );
 
-ground.rotation.x=-Math.PI/2;
-scene.add(ground);
+ cube(
+  200,.13,1,
+  0xaaaaaa,
+  0,.08,z-6
+ );
 
-
-for(let x=-100;x<=100;x+=40){
-
- box(12,.1,200,0x303236,x,.05,0);
-
- box(1,.12,200,0xaaaaaa,x-6,.07,0);
- box(1,.12,200,0xaaaaaa,x+6,.07,0);
+ cube(
+  200,.13,1,
+  0xaaaaaa,
+  0,.08,z+6
+ );
 }
 
 
-for(let z=-100;z<=100;z+=40){
+/* =========================================================
+   BUILDINGS
+========================================================= */
 
- box(200,.1,12,0x303236,0,.05,z);
-
- box(200,.12,1,0xaaaaaa,0,.07,z-6);
- box(200,.12,1,0xaaaaaa,0,.07,z+6);
-}
-
-
-/* BUILDINGS */
-
-let seed=9;
+let seed=8;
 
 function rnd(){
 
- seed=(seed*9301+49297)%233280;
+ seed=
+  (seed*9301+49297)%233280;
 
  return seed/233280;
 }
 
 
-for(let x=-80;x<=80;x+=40){
+const buildingColors=[
+ 0x70777d,
+ 0x8a7567,
+ 0x526878,
+ 0x806d80,
+ 0x68765e
+];
 
- for(let z=-80;z<=80;z+=40){
 
-  if(Math.abs(x)<20&&Math.abs(z)<20)
+for(
+ let x=-80;
+ x<=80;
+ x+=40
+){
+
+ for(
+  let z=-80;
+  z<=80;
+  z+=40
+ ){
+
+  if(
+   Math.abs(x)<20 &&
+   Math.abs(z)<20
+  )
    continue;
 
-  for(let a of[-12,12]){
 
-   for(let b of[-12,12]){
+  for(
+   let a of [-12,12]
+  ){
 
-    let h=8+rnd()*18;
+   for(
+    let b of [-12,12]
+   ){
 
-    box(
-     11,
+    let h=
+     8+rnd()*22;
+
+    cube(
+     10+rnd()*5,
      h,
-     11,
-     [
-      0x70777d,
-      0x8a7567,
-      0x526878,
-      0x806d80
-     ][Math.floor(rnd()*4)],
+     10+rnd()*5,
+     buildingColors[
+      Math.floor(
+       rnd()*buildingColors.length
+      )
+     ],
      x+a,
      h/2,
      z+b
     );
+
    }
   }
  }
 }
 
 
-/* TREES */
+/* =========================================================
+   TREES
+========================================================= */
 
 function tree(x,z){
 
- box(.8,4,.8,0x654321,x,2,z);
+ cube(
+  .8,
+  4,
+  .8,
+  0x654321,
+  x,2,z
+ );
 
- let c=new THREE.Mesh(
-  new THREE.SphereGeometry(3,8,8),
+ let crown=
+  new THREE.Mesh(
+   new THREE.SphereGeometry(
+    3,8,8
+   ),
+   new THREE.MeshStandardMaterial({
+    color:0x246b32
+   })
+  );
+
+ crown.position.set(
+  x,6,z
+ );
+
+ scene.add(crown);
+}
+
+
+for(
+ let i=0;
+ i<35;
+ i++
+){
+
+ tree(
+  (rnd()-.5)*170,
+  (rnd()-.5)*170
+ );
+}
+
+
+/* =========================================================
+   PLAYER
+========================================================= */
+
+const player=
+ new THREE.Group();
+
+
+cube(
+ 1.4,
+ 2,
+ .8,
+ 0x222222,
+ 0,
+ 2.1,
+ 0,
+ player
+);
+
+
+const head=
+ new THREE.Mesh(
+  new THREE.SphereGeometry(
+   .55,12,10
+  ),
   new THREE.MeshStandardMaterial({
-   color:0x246b32
+   color:0xc98b63
   })
  );
 
- c.position.set(x,6,z);
-
- scene.add(c);
-}
-
-
-for(let i=0;i<30;i++){
-
- tree(
-  (rnd()-.5)*180,
-  (rnd()-.5)*180
- );
-}
-
-
-/* PLAYER */
-
-const player=new THREE.Group();
-
-box(
- 1.4,2,.8,
- 0x222222,
- 0,2.1,0,
- player
-);
-
-let head=new THREE.Mesh(
- new THREE.SphereGeometry(.55,12,10),
- new THREE.MeshStandardMaterial({
-  color:0xc98b63
- })
-);
-
 head.position.y=3.6;
+
 player.add(head);
 
-box(.45,1.8,.55,0x1d3550,-.4,.8,0,player);
-box(.45,1.8,.55,0x1d3550,.4,.8,0,player);
 
-box(.4,1.6,.5,0xc98b63,-.9,2.1,0,player);
-box(.4,1.6,.5,0xc98b63,.9,2.1,0,player);
-
-const gun=box(
- .25,.25,1.2,
- 0x111111,
- .75,2.2,-.65,
+cube(
+ .45,
+ 1.8,
+ .55,
+ 0x1d3550,
+ -.4,.8,0,
  player
 );
 
-player.position.set(0,0,10);
+
+cube(
+ .45,
+ 1.8,
+ .55,
+ 0x1d3550,
+ .4,.8,0,
+ player
+);
+
+
+cube(
+ .4,
+ 1.6,
+ .5,
+ 0xc98b63,
+ -.9,2.1,0,
+ player
+);
+
+
+cube(
+ .4,
+ 1.6,
+ .5,
+ 0xc98b63,
+ .9,2.1,0,
+ player
+);
+
+
+const gun=
+ cube(
+  .25,
+  .25,
+  1.2,
+  0x111111,
+  .75,
+  2.2,
+  -.65,
+  player
+ );
+
+
+player.position.set(
+ 0,0,10
+);
+
 scene.add(player);
 
 
-/* WEAPONS */
+/* =========================================================
+   WEAPONS
+========================================================= */
 
 const weapons=[
 
  {
   name:"PISTOL",
   damage:50,
+  maxAmmo:30,
   ammo:30,
-  max:30,
   price:0,
   color:0x111111
  },
@@ -362,300 +707,644 @@ const weapons=[
  {
   name:"RIFLE",
   damage:85,
+  maxAmmo:60,
   ammo:60,
-  max:60,
   price:1000,
   color:0x444444
- },
-
- {
-  name:"SMG",
-  damage:35,
-  ammo:100,
-  max:100,
-  price:1500,
-  color:0x222222
  }
 
 ];
 
-let weapon=0;
+
+let weaponIndex=0;
+
+
+function currentWeapon(){
+
+ return weapons[weaponIndex];
+}
 
 
 function updateWeapon(){
 
- let w=weapons[weapon];
+ const w=
+  currentWeapon();
 
- gun.material.color.set(w.color);
+ gun.material.color.set(
+  w.color
+ );
 
- document.getElementById("weapon")
- .textContent=w.name;
+ document.getElementById(
+  "weapon"
+ ).textContent=
+  w.name;
 
- document.getElementById("ammo")
- .textContent=w.ammo;
+ document.getElementById(
+  "ammo"
+ ).textContent=
+  w.ammo;
 }
 
 
-/* ARRAYS */
+/* =========================================================
+   CARS
+========================================================= */
 
 let cars=[];
-let traffic=[];
-let police=[];
-let enemies=[];
-let peds=[];
-let helis=[];
 
 
-/* CARS */
-
-function car(
- x,z,c,r=0,
- trafficCar=false,
- pol=false
+function makeCar(
+ x,z,
+ color,
+ rot=0,
+ police=false,
+ traffic=false
 ){
 
- let g=new THREE.Group();
+ let g=
+  new THREE.Group();
 
- g.position.set(x,0,z);
- g.rotation.y=r;
+ g.position.set(
+  x,0,z
+ );
+
+ g.rotation.y=rot;
 
  g.userData.speed=0;
  g.userData.used=false;
- g.userData.traffic=trafficCar;
- g.userData.police=pol;
+ g.userData.police=police;
+ g.userData.traffic=traffic;
 
- box(
-  4.3,1.1,7,
-  pol?0xffffff:c,
+
+ cube(
+  4.3,
+  1.1,
+  7,
+  police?0xffffff:color,
   0,1,0,
   g
  );
 
- box(
-  3.1,1,3,
+
+ cube(
+  3.1,
+  1,
+  3,
   0x20252b,
   0,1.8,0,
   g
  );
 
- let wg=new THREE.CylinderGeometry(
-  .7,.7,.45,10
- );
 
- for(let a of[-2.1,2.1]){
+ const wheelGeo=
+  new THREE.CylinderGeometry(
+   .7,.7,.45,12
+  );
 
-  for(let b of[-2.2,2.2]){
 
-   let w=new THREE.Mesh(
-    wg,
-    new THREE.MeshStandardMaterial({
-     color:0x111111
-    })
+ for(
+  let a of [-2.1,2.1]
+ ){
+
+  for(
+   let b of [-2.2,2.2]
+  ){
+
+   let w=
+    new THREE.Mesh(
+     wheelGeo,
+     new THREE.MeshStandardMaterial({
+      color:0x111111
+     })
+    );
+
+   w.rotation.z=
+    Math.PI/2;
+
+   w.position.set(
+    a,.7,b
    );
-
-   w.rotation.z=Math.PI/2;
-   w.position.set(a,.7,b);
 
    g.add(w);
   }
  }
 
- if(pol){
 
-  box(.7,.25,1,0xff0000,-.5,2.5,0,g);
-  box(.7,.25,1,0x0000ff,.5,2.5,0,g);
+ if(police){
+
+  cube(
+   .7,.25,1,
+   0xff0000,
+   -.5,2.5,0,
+   g
+  );
+
+  cube(
+   .7,.25,1,
+   0x0000ff,
+   .5,2.5,0,
+   g
+  );
  }
+
 
  scene.add(g);
 
- if(trafficCar)
-  traffic.push(g);
- else
+
+ if(
+  !police &&
+  !traffic
+ ){
+
   cars.push(g);
+ }
+
 
  return g;
 }
 
 
-/* PLAYER CARS */
+/* PARKED CARS */
 
-car(18,8,0xc63333,Math.PI/2);
-car(-20,-30,0x2865c9,Math.PI/2);
-car(45,45,0xd3a527);
-car(-50,20,0xffffff,Math.PI/2);
+makeCar(
+ 18,8,
+ 0xc63333,
+ Math.PI/2
+);
+
+makeCar(
+ -20,-30,
+ 0x2865c9,
+ Math.PI/2
+);
+
+makeCar(
+ 45,45,
+ 0xd3a527
+);
+
+makeCar(
+ -50,20,
+ 0xffffff,
+ Math.PI/2
+);
 
 
-/* TRAFFIC */
+/* =========================================================
+   TRAFFIC
+========================================================= */
 
-for(let i=0;i<10;i++){
+let traffic=[];
 
- let h=i%2===0;
- let r=Math.floor(
-  Math.random()*5-2
- )*40;
 
- let c=car(
-  h?(Math.random()-.5)*180:r,
-  h?r:(Math.random()-.5)*180,
-  [
-   0xff3333,
-   0x3366ff,
-   0xffff33,
-   0xffffff,
-   0x33aa66
-  ][i%5],
-  h?Math.PI/2:0,
-  true
- );
+function createTraffic(){
 
- c.userData.speed=.04+Math.random()*.04;
+ const colors=[
+  0xff3333,
+  0x3366ff,
+  0xffff33,
+  0xffffff,
+  0x33aa66
+ ];
+
+
+ for(
+  let i=0;
+  i<12;
+  i++
+ ){
+
+  let horizontal=
+   i%2===0;
+
+  let road=
+   Math.floor(
+    Math.random()*5-2
+   )*40;
+
+
+  let c=
+   makeCar(
+    horizontal?
+     (Math.random()-.5)*180:
+     road,
+
+    horizontal?
+     road:
+     (Math.random()-.5)*180,
+
+    colors[
+     Math.floor(
+      Math.random()*colors.length
+     )
+    ],
+
+    horizontal?
+     Math.PI/2:
+     0,
+
+    false,
+    true
+   );
+
+
+  c.userData.speed=
+   .05+Math.random()*.04;
+
+  traffic.push(c);
+ }
 }
 
 
-/* PEDESTRIANS */
+createTraffic();
 
-for(let i=0;i<22;i++){
 
- let p=new THREE.Group();
+function updateTraffic(){
+
+ for(
+  let c of traffic
+ ){
+
+  if(
+   c.rotation.y===0
+  ){
+
+   c.position.z+=
+    c.userData.speed;
+
+   if(
+    c.position.z>150
+   )
+    c.position.z=-150;
+
+  }else{
+
+   c.position.x+=
+    c.userData.speed;
+
+   if(
+    c.position.x>150
+   )
+    c.position.x=-150;
+  }
+ }
+}
+
+
+/* =========================================================
+   PEDESTRIANS
+========================================================= */
+
+let pedestrians=[];
+
+
+function createPedestrian(x,z){
+
+ let p=
+  new THREE.Group();
 
  p.position.set(
-  (Math.random()-.5)*170,
-  0,
-  (Math.random()-.5)*170
+  x,0,z
  );
 
- box(
-  .8,1.7,.6,
-  [
-   0xff5555,
-   0x5555ff,
-   0xffff55,
-   0xffffff,
-   0x55cc88
-  ][i%5],
+
+ const colors=[
+  0xff5555,
+  0x5555ff,
+  0xffff55,
+  0xffffff,
+  0x55cc88
+ ];
+
+
+ cube(
+  .8,
+  1.7,
+  .6,
+  colors[
+   Math.floor(
+    Math.random()*colors.length
+   )
+  ],
   0,1.7,0,
   p
  );
 
- let h=new THREE.Mesh(
-  new THREE.SphereGeometry(.38,8,8),
-  new THREE.MeshStandardMaterial({
-   color:0xc98b63
-  })
- );
+
+ let h=
+  new THREE.Mesh(
+   new THREE.SphereGeometry(
+    .38,8,8
+   ),
+   new THREE.MeshStandardMaterial({
+    color:0xc98b63
+   })
+  );
 
  h.position.y=2.8;
 
  p.add(h);
 
- p.userData.dx=(Math.random()-.5)*.025;
- p.userData.dz=(Math.random()-.5)*.025;
+
+ p.userData.dx=
+  (Math.random()-.5)*.025;
+
+ p.userData.dz=
+  (Math.random()-.5)*.025;
+
 
  scene.add(p);
- peds.push(p);
+
+ pedestrians.push(p);
 }
 
 
-/* ENEMIES */
+for(
+ let i=0;
+ i<25;
+ i++
+){
 
-function enemy(x,z){
+ createPedestrian(
+  (Math.random()-.5)*160,
+  (Math.random()-.5)*160
+ );
+}
 
- let e=new THREE.Group();
 
- e.position.set(x,0,z);
+function updatePedestrians(){
 
- box(
-  1.3,2,.8,
+ for(
+  let p of pedestrians
+ ){
+
+  p.position.x+=
+   p.userData.dx;
+
+  p.position.z+=
+   p.userData.dz;
+
+
+  if(
+   Math.abs(p.position.x)>150
+  )
+   p.userData.dx*=-1;
+
+
+  if(
+   Math.abs(p.position.z)>150
+  )
+   p.userData.dz*=-1;
+
+
+  if(
+   Math.random()<.01
+  ){
+
+   p.userData.dx=
+    (Math.random()-.5)*.025;
+
+   p.userData.dz=
+    (Math.random()-.5)*.025;
+  }
+ }
+}
+
+
+/* =========================================================
+   ENEMIES
+========================================================= */
+
+let enemies=[];
+
+
+function makeEnemy(x,z){
+
+ let e=
+  new THREE.Group();
+
+ e.position.set(
+  x,0,z
+ );
+
+
+ cube(
+  1.3,
+  2,
+  .8,
   0x741515,
   0,2,0,
   e
  );
 
- let h=new THREE.Mesh(
-  new THREE.SphereGeometry(.55,10,8),
-  new THREE.MeshStandardMaterial({
-   color:0xb87955
-  })
- );
+
+ let h=
+  new THREE.Mesh(
+   new THREE.SphereGeometry(
+    .55,12,10
+   ),
+   new THREE.MeshStandardMaterial({
+    color:0xb87955
+   })
+  );
 
  h.position.y=3.5;
 
  e.add(h);
 
+
  e.userData.hp=100;
+ e.userData.dead=false;
  e.userData.cool=0;
- e.userData.root=true;
+ e.userData.enemyRoot=true;
+ e.userData.type="enemy";
+
 
  scene.add(e);
+
  enemies.push(e);
 }
 
-enemy(35,15);
-enemy(-35,-10);
-enemy(55,-35);
-enemy(-55,45);
-enemy(65,65);
+
+makeEnemy(35,15);
+makeEnemy(-35,-10);
+makeEnemy(55,-35);
+makeEnemy(-55,45);
+makeEnemy(65,65);
 
 
-/* SPECIAL BUILDINGS */
+/* =========================================================
+   POLICE
+========================================================= */
 
-function building(x,z,c){
+let police=[];
 
- let g=new THREE.Group();
 
- g.position.set(x,0,z);
+function spawnPolice(){
 
- box(
-  11,7,11,
-  c,
-  0,3.5,0,
-  g
+ if(
+  police.length>=wanted
+ )
+  return;
+
+
+ let a=
+  Math.random()*
+  Math.PI*2;
+
+
+ let d=
+  35+Math.random()*20;
+
+
+ let x=
+  player.position.x+
+  Math.sin(a)*d;
+
+
+ let z=
+  player.position.z+
+  Math.cos(a)*d;
+
+
+ let c=
+  makeCar(
+   x,
+   z,
+   0xffffff,
+   a,
+   true,
+   false
+  );
+
+
+ let officer=
+  new THREE.Group();
+
+
+ officer.position.set(
+  x,0,z
  );
 
- box(
-  8,1,.3,
-  0xffffff,
-  0,7.5,5.6,
-  g
+
+ cube(
+  1.3,
+  2,
+  .8,
+  0x151a25,
+  0,2,0,
+  officer
  );
 
- scene.add(g);
 
- return g;
+ let h=
+  new THREE.Mesh(
+   new THREE.SphereGeometry(
+    .55,12,10
+   ),
+   new THREE.MeshStandardMaterial({
+    color:0xc98b63
+   })
+  );
+
+
+ h.position.y=3.5;
+
+ officer.add(h);
+
+
+ officer.userData.cool=0;
+ officer.userData.enemyRoot=true;
+ officer.userData.type="police";
+
+
+ scene.add(officer);
+
+
+ police.push({
+  car:c,
+  officer:officer
+ });
 }
 
-const shop=building(60,60,0x7b2cbf);
-const garage=building(-60,60,0x1565c0);
-const hospital=building(60,-60,0xeeeeee);
-const station=building(-60,-60,0x333333);
+
+/* =========================================================
+   HELICOPTERS
+========================================================= */
+
+let helicopters=[];
 
 
-/* MISSION MARKER */
+function spawnHelicopter(){
 
-function mkMarker(x,z,c){
+ if(
+  helicopters.length
+ )
+  return;
 
- let m=new THREE.Mesh(
-  new THREE.CylinderGeometry(3,3,.3,20),
-  new THREE.MeshStandardMaterial({
-   color:c
-  })
+
+ let h=
+  new THREE.Group();
+
+
+ h.position.set(
+  player.position.x+35,
+  28,
+  player.position.z+35
  );
 
- m.position.set(x,.2,z);
 
- scene.add(m);
+ cube(
+  3,
+  1.2,
+  5,
+  0x202020,
+  0,0,0,
+  h
+ );
 
- return m;
+
+ cube(
+  1.2,
+  .6,
+  2,
+  0x555555,
+  0,1,0,
+  h
+ );
+
+
+ let rotor=
+  new THREE.Mesh(
+   new THREE.BoxGeometry(
+    9,.12,.4
+   ),
+   new THREE.MeshStandardMaterial({
+    color:0x111111
+   })
+  );
+
+
+ rotor.position.y=1.4;
+
+ h.add(rotor);
+
+ h.userData.rotor=rotor;
+ h.userData.cool=0;
+
+
+ scene.add(h);
+
+ helicopters.push(h);
 }
 
-const marker=
- mkMarker(20,20,0x0088ff);
 
-
-/* GAME STATE */
+/* =========================================================
+   GAME STATE
+========================================================= */
 
 let hp=100;
-let money=1000;
+let money=500;
 let wanted=0;
 
 let driving=false;
@@ -663,10 +1352,11 @@ let currentCar=null;
 
 let joyX=0;
 let joyY=0;
+let joyActive=false;
 
-let cam=0;
+let camAngle=0;
 
-let vy=0;
+let velocityY=0;
 let onGround=true;
 
 let running=false;
@@ -675,1014 +1365,10 @@ let brake=false;
 
 let keys={};
 
-let mission=0;
-let kills=0;
 
-let time=8;
-
-
-/* MISSIONS */
-
-const missions=[
- "Reach the blue marker",
- "Steal a car",
- "Defeat 3 enemies",
- "Lose the police",
- "Visit the weapon shop",
- "Visit the garage",
- "Visit the hospital",
- "Visit the police station"
-];
-
-const targets=[
- [20,20,0x0088ff],
- [20,20,0x0088ff],
- [20,20,0x0088ff],
- [20,20,0x0088ff],
- [60,60,0xff00ff],
- [-60,60,0x00aaff],
- [60,-60,0xffffff],
- [-60,-60,0xffff00]
-];
-
-
-function setMarker(){
-
- let t=targets[mission];
-
- marker.position.set(
-  t[0],.2,t[1]
- );
-
- marker.material.color.set(t[2]);
-}
-
-
-function complete(){
-
- money+=500;
-
- mission++;
-
- if(mission>=missions.length)
-  mission=0;
-
- kills=0;
-
- setMarker();
-
- msg(
-  "MISSION COMPLETE<br>+$500"
- );
-}
-
-
-/* WALK */
-
-function walk(){
-
- if(driving)return;
-
- let f=-joyY;
- let s=joyX;
-
- if(keys.w)f=1;
- if(keys.s)f=-1;
-
- if(keys.a)s=-1;
- if(keys.d)s=1;
-
- let x=
-  Math.sin(cam)*f+
-  Math.cos(cam)*s;
-
- let z=
-  Math.cos(cam)*f-
-  Math.sin(cam)*s;
-
- let l=Math.hypot(x,z);
-
- if(l>1){
-
-  x/=l;
-  z/=l;
- }
-
- let sp=
-  (running||keys.shift)?.18:.1;
-
- player.position.x+=x*sp;
- player.position.z+=z*sp;
-
- player.position.x=
-  Math.max(-150,
-  Math.min(150,player.position.x));
-
- player.position.z=
-  Math.max(-150,
-  Math.min(150,player.position.z));
-
- if(l>.1)
-  player.rotation.y=Math.atan2(x,z);
-
- vy-=.012;
-
- player.position.y+=vy;
-
- if(player.position.y<=0){
-
-  player.position.y=0;
-  vy=0;
-  onGround=true;
- }
-}
-
-
-/* CAR ENTER */
-
-function nearCar(){
-
- let best=null;
- let md=8;
-
- for(let c of cars){
-
-  if(
-   !c.userData.used &&
-   d(player,c)<md
-  ){
-
-   md=d(player,c);
-   best=c;
-  }
- }
-
- return best;
-}
-
-
-function enterCar(){
-
- let c=nearCar();
-
- if(!c)return;
-
- currentCar=c;
-
- driving=true;
-
- c.userData.used=true;
-
- player.visible=false;
-
- document.getElementById("buttons")
- .style.display="none";
-
- document.getElementById("drive")
- .style.display="flex";
-
- wanted=Math.min(5,wanted+1);
-
- if(mission===1)
-  complete();
-
- msg("CAR STOLEN");
-}
-
-
-function exitCar(){
-
- if(!currentCar)return;
-
- let c=currentCar;
-
- c.userData.used=false;
-
- player.position.set(
-  c.position.x+5,
-  0,
-  c.position.z
- );
-
- player.visible=true;
-
- currentCar=null;
- driving=false;
-
- document.getElementById("drive")
- .style.display="none";
-
- document.getElementById("buttons")
- .style.display="flex";
-}
-
-
-/* DRIVING */
-
-function drive(){
-
- if(!driving)return;
-
- let c=currentCar;
-
- let t=0;
-
- if(gas||keys.w)t=1;
- if(brake||keys.s)t=-1;
-
- c.userData.speed+=t*.012;
-
- c.userData.speed*=.985;
-
- c.userData.speed=
-  Math.max(
-   -.18,
-   Math.min(.42,c.userData.speed)
-  );
-
- let s=joyX;
-
- if(keys.a)s=-1;
- if(keys.d)s=1;
-
- if(
-  Math.abs(c.userData.speed)>.005
- ){
-
-  c.rotation.y+=
-   s*.035*
-   Math.sign(c.userData.speed);
- }
-
- c.position.x+=
-  Math.sin(c.rotation.y)*
-  c.userData.speed;
-
- c.position.z+=
-  Math.cos(c.rotation.y)*
-  c.userData.speed;
-}
-
-
-/* SHOOTING */
-
-const ray=
- new THREE.Raycaster();
-
-
-function shoot(){
-
- if(driving)return;
-
- let w=weapons[weapon];
-
- if(w.ammo<=0){
-
-  msg("OUT OF AMMO");
-  return;
- }
-
- w.ammo--;
-
- wanted=Math.min(5,wanted+1);
-
- ray.setFromCamera(
-  new THREE.Vector2(0,0),
-  camera
- );
-
- let hit=
-  ray.intersectObjects(
-   enemies,
-   true
-  )[0];
-
- if(hit){
-
-  let o=hit.object;
-
-  while(
-   o.parent &&
-   !o.userData.root
-  )
-   o=o.parent;
-
-  o.userData.hp-=w.damage;
-
-  if(o.userData.hp<=0){
-
-   scene.remove(o);
-
-   let i=enemies.indexOf(o);
-
-   if(i>=0)
-    enemies.splice(i,1);
-
-   money+=100;
-
-   kills++;
-
-   if(
-    mission===2 &&
-    kills>=3
-   )
-    complete();
-  }
- }
-
- updateWeapon();
-}
-
-
-/* POLICE */
-
-function spawnPolice(){
-
- if(police.length>=wanted)
-  return;
-
- let a=Math.random()*Math.PI*2;
-
- let x=
-  player.position.x+
-  Math.sin(a)*35;
-
- let z=
-  player.position.z+
-  Math.cos(a)*35;
-
- let c=car(
-  x,z,
-  0xffffff,
-  a,
-  false,
-  true
- );
-
- police.push(c);
-}
-
-
-function policeAI(){
-
- if(!wanted){
-
-  police.forEach(
-   p=>scene.remove(p)
-  );
-
-  police.length=0;
-
-  return;
- }
-
- while(police.length<wanted)
-  spawnPolice();
-
- for(let c of police){
-
-  let dx=
-   player.position.x-c.position.x;
-
-  let dz=
-   player.position.z-c.position.z;
-
-  let ang=Math.atan2(dx,dz);
-
-  let dif=Math.atan2(
-   Math.sin(ang-c.rotation.y),
-   Math.cos(ang-c.rotation.y)
-  );
-
-  c.rotation.y+=
-   Math.max(
-    -.035,
-    Math.min(.035,dif)
-   );
-
-  c.userData.speed=
-   Math.min(
-    .32,
-    c.userData.speed*.99+.008
-   );
-
-  c.position.x+=
-   Math.sin(c.rotation.y)*
-   c.userData.speed;
-
-  c.position.z+=
-   Math.cos(c.rotation.y)*
-   c.userData.speed;
-
-  if(
-   Math.hypot(dx,dz)<9
-  ){
-
-   hp-=.15;
-
-   if(hp<=0){
-
-    hp=100;
-    wanted=0;
-
-    player.position.set(
-     0,0,10
-    );
-
-    msg("BUSTED");
-   }
-  }
- }
-}
-
-
-/* HELICOPTER */
-
-function heliAI(){
-
- if(
-  wanted>=4 &&
-  helis.length===0
- ){
-
-  let h=new THREE.Group();
-
-  h.position.set(
-   player.position.x+30,
-   28,
-   player.position.z+30
-  );
-
-  box(
-   3,1.2,5,
-   0x202020,
-   0,0,0,
-   h
-  );
-
-  let r=new THREE.Mesh(
-   new THREE.BoxGeometry(9,.12,.4),
-   new THREE.MeshStandardMaterial({
-    color:0x111111
-   })
-  );
-
-  r.position.y=1.4;
-
-  h.add(r);
-
-  h.userData.r=r;
-
-  scene.add(h);
-
-  helis.push(h);
- }
-
- if(wanted<4){
-
-  helis.forEach(
-   h=>scene.remove(h)
-  );
-
-  helis=[];
- }
-
- for(let h of helis){
-
-  h.position.x+=
-   (player.position.x-
-    h.position.x)*.008;
-
-  h.position.z+=
-   (player.position.z-
-    h.position.z)*.008;
-
-  h.userData.r.rotation.y+=.4;
- }
-}
-
-
-/* BUILDING USE */
-
-function use(){
-
- let ds=[
-  d(player,shop),
-  d(player,garage),
-  d(player,hospital),
-  d(player,station)
- ];
-
- let md=Math.min(...ds);
-
- if(md>13){
-
-  msg("NOTHING HERE");
-  return;
- }
-
- let i=ds.indexOf(md);
-
- if(i===0){
-
-  let next=weapon+1;
-
-  if(next>=weapons.length){
-
-   msg("ALL WEAPONS OWNED");
-   return;
-  }
-
-  let w=weapons[next];
-
-  if(money<w.price){
-
-   msg("NEED $"+w.price);
-   return;
-  }
-
-  money-=w.price;
-  weapon=next;
-
-  updateWeapon();
-
-  if(mission===4)
-   complete();
-
-  msg(w.name+" PURCHASED");
-
- }else if(i===1){
-
-  if(!driving){
-
-   msg("ENTER A CAR FIRST");
-   return;
-  }
-
-  currentCar.userData.speed=0;
-
-  if(mission===5)
-   complete();
-
-  msg("CAR REPAIRED");
-
- }else if(i===2){
-
-  hp=100;
-
-  if(mission===6)
-   complete();
-
-  msg("HEALTH RESTORED");
-
- }else{
-
-  wanted=0;
-
-  if(mission===7)
-   complete();
-
-  msg("WANTED CLEARED");
- }
-}
-
-
-/* MISSIONS */
-
-function updateMission(){
-
- document.getElementById("mission")
- .textContent=
-  missions[mission]+
-  (
-   mission===2
-   ?" ("+kills+"/3)"
-   :""
-  );
-
- if(
-  mission===0 &&
-  d(player,marker)<7
- )
-  complete();
-
- if(
-  mission===3 &&
-  wanted===0
- )
-  complete();
-}
-
-
-/* WORLD UPDATE */
-
-function updateWorld(){
-
- for(let c of traffic){
-
-  if(c.rotation.y===0){
-
-   c.position.z+=c.userData.speed;
-
-   if(c.position.z>150)
-    c.position.z=-150;
-
-  }else{
-
-   c.position.x+=c.userData.speed;
-
-   if(c.position.x>150)
-    c.position.x=-150;
-  }
- }
-
-
- for(let p of peds){
-
-  p.position.x+=p.userData.dx;
-  p.position.z+=p.userData.dz;
-
-  if(Math.abs(p.position.x)>150)
-   p.userData.dx*=-1;
-
-  if(Math.abs(p.position.z)>150)
-   p.userData.dz*=-1;
- }
-
-
- for(let e of enemies){
-
-  let dd=d(player,e);
-
-  if(dd<30){
-
-   let dx=
-    player.position.x-e.position.x;
-
-   let dz=
-    player.position.z-e.position.z;
-
-   let l=Math.hypot(dx,dz);
-
-   if(l>5){
-
-    e.position.x+=
-     dx/l*.035;
-
-    e.position.z+=
-     dz/l*.035;
-
-   }else{
-
-    e.userData.cool--;
-
-    if(e.userData.cool<=0){
-
-     hp-=4;
-
-     e.userData.cool=50;
-    }
-   }
-  }
- }
-}
-
-
-/* WANTED */
-
-let wantedTimer=0;
-
-function wantedUpdate(){
-
- if(!wanted){
-
-  wantedTimer=0;
-  return;
- }
-
- wantedTimer++;
-
- let close=
-  police.some(
-   p=>d(player,p)<35
-  );
-
- if(
-  !close &&
-  wantedTimer>500
- ){
-
-  wanted--;
-  wantedTimer=0;
- }
-
- if(
-  mission===3 &&
-  wanted===0
- )
-  complete();
-}
-
-
-/* DAY/NIGHT */
-
-function day(){
-
- time+=.002;
-
- if(time>=24)
-  time=0;
-
- let light=Math.max(
-  0,
-  Math.sin(
-   (time-6)*Math.PI/12
-  )
- );
-
- sun.intensity=
-  .35+light*1.7;
-
- hemi.intensity=
-  .4+light*1.3;
-
- let r=(25+light*100)/255;
- let g=(45+light*140)/255;
- let b=(65+light*150)/255;
-
- scene.background.setRGB(
-  r,g,b
- );
-
- scene.fog.color.copy(
-  scene.background
- );
-
- let h=Math.floor(time);
-
- let m=Math.floor(
-  (time-h)*60
- );
-
- document.getElementById("clock")
- .textContent=
-  String(h).padStart(2,"0")+
-  ":"+
-  String(m).padStart(2,"0");
-}
-
-
-/* SAVE */
-
-function save(){
-
- localStorage.setItem(
-  "oc71",
-  JSON.stringify({
-
-   hp,
-   money,
-   wanted,
-   weapon,
-
-   ammo:weapons.map(
-    w=>w.ammo
-   ),
-
-   mission,
-   kills,
-
-   x:player.position.x,
-   z:player.position.z,
-
-   time
-  })
- );
-
- msg("GAME SAVED");
-}
-
-
-/* LOAD */
-
-function load(){
-
- let s=
-  localStorage.getItem("oc71");
-
- if(!s){
-
-  msg("NO SAVE");
-  return;
- }
-
- s=JSON.parse(s);
-
- hp=s.hp??100;
- money=s.money??1000;
- wanted=s.wanted??0;
- weapon=s.weapon??0;
- mission=s.mission??0;
- kills=s.kills??0;
-
- player.position.set(
-  s.x??0,
-  0,
-  s.z??10
- );
-
- time=s.time??8;
-
- (s.ammo||[]).forEach(
-  (a,i)=>{
-   if(weapons[i])
-    weapons[i].ammo=a;
-  }
- );
-
- setMarker();
- updateWeapon();
-
- msg("GAME LOADED");
-}
-
-
-/* CAMERA */
-
-function camUpdate(){
-
- if(driving){
-
-  let c=currentCar;
-
-  camera.position.set(
-   c.position.x-
-    Math.sin(cam)*10,
-   5.5,
-   c.position.z-
-    Math.cos(cam)*10
-  );
-
-  camera.lookAt(
-   c.position.x,
-   1.3,
-   c.position.z
-  );
-
- }else{
-
-  camera.position.set(
-   player.position.x-
-    Math.sin(cam)*9,
-   player.position.y+5.5,
-   player.position.z-
-    Math.cos(cam)*9
-  );
-
-  camera.lookAt(
-   player.position.x,
-   player.position.y+2,
-   player.position.z
-  );
- }
-}
-
-
-/* MAP */
-
-const map=
- document.getElementById("map");
-
-const ctx=
- map.getContext("2d");
-
-
-function drawMap(){
-
- ctx.clearRect(0,0,120,120);
-
- ctx.fillStyle="#172017";
-
- ctx.fillRect(
-  0,0,120,120
- );
-
- ctx.strokeStyle="#555";
- ctx.lineWidth=4;
-
- for(let x=-100;x<=100;x+=40){
-
-  let p=60+x/3;
-
-  ctx.beginPath();
-  ctx.moveTo(p,0);
-  ctx.lineTo(p,120);
-  ctx.stroke();
- }
-
- for(let z=-100;z<=100;z+=40){
-
-  let p=60+z/3;
-
-  ctx.beginPath();
-  ctx.moveTo(0,p);
-  ctx.lineTo(120,p);
-  ctx.stroke();
- }
-
- ctx.fillStyle="#00ffff";
-
- ctx.beginPath();
-
- ctx.arc(
-  60+player.position.x/3,
-  60+player.position.z/3,
-  4,
-  0,7
- );
-
- ctx.fill();
-
-
- ctx.fillStyle="#ff3333";
-
- enemies.forEach(e=>{
-
-  ctx.beginPath();
-
-  ctx.arc(
-   60+e.position.x/3,
-   60+e.position.z/3,
-   3,
-   0,7
-  );
-
-  ctx.fill();
- });
-
-
- ctx.fillStyle="#fff";
-
- police.forEach(p=>{
-
-  ctx.beginPath();
-
-  ctx.arc(
-   60+p.position.x/3,
-   60+p.position.z/3,
-   3,
-   0,7
-  );
-
-  ctx.fill();
- });
-
-
- ctx.fillStyle="#00ff55";
-
- ctx.beginPath();
-
- ctx.arc(
-  60+marker.position.x/3,
-  60+marker.position.z/3,
-  4,
-  0,7
- );
-
- ctx.fill();
-}
-
-
-/* UI */
-
-function ui(){
-
- document.getElementById("hp")
- .textContent=
-  Math.max(0,Math.floor(hp));
-
- document.getElementById("money")
- .textContent=
-  Math.floor(money);
-
- document.getElementById("wanted")
- .textContent=wanted;
-
- document.getElementById("police")
- .textContent=police.length;
-
- document.getElementById("heli")
- .textContent=helis.length;
-
- document.getElementById("enter")
- .style.display=
-  !driving&&nearCar()
-  ?"block"
-  :"none";
-}
-
-
-/* JOYSTICK */
+/* =========================================================
+   JOYSTICK
+========================================================= */
 
 const joy=
  document.getElementById("joy");
@@ -1693,7 +1379,7 @@ const stick=
 
 function setJoy(x,y){
 
- let r=
+ const r=
   joy.getBoundingClientRect();
 
  let dx=
@@ -1702,25 +1388,38 @@ function setJoy(x,y){
  let dy=
   y-r.top-r.height/2;
 
- let max=43;
+ const max=43;
 
- let l=Math.hypot(dx,dy);
+ const len=
+  Math.hypot(dx,dy);
 
- if(l>max){
 
-  dx=dx/l*max;
-  dy=dy/l*max;
+ if(len>max){
+
+  dx=
+   dx/len*max;
+
+  dy=
+   dy/len*max;
  }
 
- joyX=dx/max;
- joyY=dy/max;
+
+ joyX=
+  dx/max;
+
+ joyY=
+  dy/max;
+
 
  stick.style.transform=
-  "translate("+dx+"px,"+dy+"px)";
+  "translate("+dx+"px,"+
+  dy+"px)";
 }
 
 
 function resetJoy(){
+
+ joyActive=false;
 
  joyX=0;
  joyY=0;
@@ -1733,17 +1432,33 @@ function resetJoy(){
 joy.addEventListener(
  "pointerdown",
  e=>{
-  joy.setPointerCapture(e.pointerId);
-  setJoy(e.clientX,e.clientY);
+
+  joyActive=true;
+
+  joy.setPointerCapture(
+   e.pointerId
+  );
+
+  setJoy(
+   e.clientX,
+   e.clientY
+  );
  }
 );
+
 
 joy.addEventListener(
  "pointermove",
  e=>{
-  setJoy(e.clientX,e.clientY);
+
+  if(joyActive)
+   setJoy(
+    e.clientX,
+    e.clientY
+   );
  }
 );
+
 
 joy.addEventListener(
  "pointerup",
@@ -1756,21 +1471,28 @@ joy.addEventListener(
 );
 
 
-/* CAMERA TOUCH */
-
-let looking=false;
-let lastX=0;
+/* =========================================================
+   CAMERA LOOK
+========================================================= */
 
 const look=
  document.getElementById("look");
+
+let looking=false;
+let lastX=0;
 
 
 look.addEventListener(
  "pointerdown",
  e=>{
+
   looking=true;
+
   lastX=e.clientX;
-  look.setPointerCapture(e.pointerId);
+
+  look.setPointerCapture(
+   e.pointerId
+  );
  }
 );
 
@@ -1779,13 +1501,13 @@ look.addEventListener(
  "pointermove",
  e=>{
 
-  if(looking){
+  if(!looking)
+   return;
 
-   cam-=
-    (e.clientX-lastX)*.008;
+  camAngle-=
+   (e.clientX-lastX)*.008;
 
-   lastX=e.clientX;
-  }
+  lastX=e.clientX;
  }
 );
 
@@ -1801,83 +1523,1656 @@ look.addEventListener(
 );
 
 
-/* BUTTONS */
+/* =========================================================
+   WALKING
+========================================================= */
 
-document.getElementById("fire")
-.onpointerdown=shoot;
+function walk(){
 
-document.getElementById("jump")
-.onpointerdown=()=>{
+ if(driving)
+  return;
 
- if(!driving&&onGround){
 
-  vy=.25;
-  onGround=false;
+ let f=
+  -joyY;
+
+ let s=
+  joyX;
+
+
+ if(keys.w)
+  f=1;
+
+ if(keys.s)
+  f=-1;
+
+ if(keys.a)
+  s=-1;
+
+ if(keys.d)
+  s=1;
+
+
+ let x=
+  Math.sin(camAngle)*f+
+  Math.cos(camAngle)*s;
+
+
+ let z=
+  Math.cos(camAngle)*f-
+  Math.sin(camAngle)*s;
+
+
+ let len=
+  Math.hypot(x,z);
+
+
+ if(len>1){
+
+  x/=len;
+  z/=len;
  }
-};
-
-document.getElementById("run")
-.onpointerdown=
- ()=>running=true;
-
-document.getElementById("run")
-.onpointerup=
- ()=>running=false;
-
-document.getElementById("run")
-.onpointercancel=
- ()=>running=false;
-
-document.getElementById("shopBtn")
-.onpointerdown=use;
-
-document.getElementById("use")
-.onpointerdown=use;
-
-document.getElementById("enter")
-.onpointerdown=enterCar;
-
-document.getElementById("exit")
-.onpointerdown=exitCar;
-
-document.getElementById("gas")
-.onpointerdown=
- ()=>gas=true;
-
-document.getElementById("gas")
-.onpointerup=
- ()=>gas=false;
-
-document.getElementById("gas")
-.onpointercancel=
- ()=>gas=false;
-
-document.getElementById("brake")
-.onpointerdown=
- ()=>brake=true;
-
-document.getElementById("brake")
-.onpointerup=
- ()=>brake=false;
-
-document.getElementById("brake")
-.onpointercancel=
- ()=>brake=false;
-
-document.getElementById("save")
-.onpointerdown=save;
-
-document.getElementById("load")
-.onpointerdown=load;
 
 
-/* KEYBOARD */
+ let speed=
+  running||keys.shift
+   ? .18
+   : .1;
+
+
+ player.position.x+=
+  x*speed;
+
+ player.position.z+=
+  z*speed;
+
+
+ player.position.x=
+  Math.max(
+   -190,
+   Math.min(
+    190,
+    player.position.x
+   )
+  );
+
+
+ player.position.z=
+  Math.max(
+   -190,
+   Math.min(
+    190,
+    player.position.z
+   )
+  );
+
+
+ if(len>.1){
+
+  player.rotation.y=
+   Math.atan2(x,z);
+ }
+
+
+ velocityY-=.012;
+
+ player.position.y+=
+  velocityY;
+
+
+ if(
+  player.position.y<=0
+ ){
+
+  player.position.y=0;
+
+  velocityY=0;
+
+  onGround=true;
+ }
+}
+
+
+/* =========================================================
+   CAR
+========================================================= */
+
+function nearestCar(){
+
+ let best=null;
+ let bestDist=999;
+
+
+ for(
+  let c of cars
+ ){
+
+  if(c.userData.used)
+   continue;
+
+
+  let d=
+   dist(player,c);
+
+
+  if(d<bestDist){
+
+   bestDist=d;
+   best=c;
+  }
+ }
+
+
+ return best;
+}
+
+
+function enterCar(){
+
+ let c=
+  nearestCar();
+
+
+ if(!c)
+  return;
+
+
+ currentCar=c;
+
+ driving=true;
+
+ c.userData.used=true;
+
+ player.visible=false;
+
+
+ wanted=
+  Math.min(
+   5,
+   wanted+1
+  );
+
+
+ document.getElementById(
+  "buttons"
+ ).style.display="none";
+
+
+ document.getElementById(
+  "drive"
+ ).style.display="flex";
+
+
+ showMsg(
+  "CAR STOLEN<br>WANTED +1"
+ );
+
+
+ checkMission("car");
+}
+
+
+function exitCar(){
+
+ if(!currentCar)
+  return;
+
+
+ let c=
+  currentCar;
+
+
+ c.userData.used=false;
+
+
+ player.position.set(
+  c.position.x+
+   Math.cos(c.rotation.y)*5,
+  0,
+  c.position.z-
+   Math.sin(c.rotation.y)*5
+ );
+
+
+ player.visible=true;
+
+ currentCar=null;
+
+ driving=false;
+
+
+ document.getElementById(
+  "drive"
+ ).style.display="none";
+
+
+ document.getElementById(
+  "buttons"
+ ).style.display="flex";
+}
+
+
+function drive(){
+
+ if(!driving)
+  return;
+
+
+ let c=
+  currentCar;
+
+
+ let throttle=0;
+
+
+ if(
+  gas||
+  keys.w
+ )
+  throttle=1;
+
+
+ if(
+  brake||
+  keys.s
+ )
+  throttle=-1;
+
+
+ c.userData.speed+=
+  throttle*.012;
+
+
+ c.userData.speed*=.985;
+
+
+ c.userData.speed=
+  Math.max(
+   -.18,
+   Math.min(
+    .42,
+    c.userData.speed
+   )
+  );
+
+
+ let steer=
+  joyX;
+
+
+ if(keys.a)
+  steer=-1;
+
+ if(keys.d)
+  steer=1;
+
+
+ if(
+  Math.abs(
+   c.userData.speed
+  )>.005
+ ){
+
+  c.rotation.y+=
+   steer*.035*
+   Math.min(
+    1,
+    Math.abs(
+     c.userData.speed
+    )*4
+   )*
+   Math.sign(
+    c.userData.speed
+   );
+ }
+
+
+ c.position.x+=
+  Math.sin(c.rotation.y)*
+  c.userData.speed;
+
+
+ c.position.z+=
+  Math.cos(c.rotation.y)*
+  c.userData.speed;
+
+
+ c.position.x=
+  Math.max(
+   -190,
+   Math.min(
+    190,
+    c.position.x
+   )
+  );
+
+
+ c.position.z=
+  Math.max(
+   -190,
+   Math.min(
+    190,
+    c.position.z
+   )
+  );
+}
+
+
+/* =========================================================
+   SHOOTING
+========================================================= */
+
+const raycaster=
+ new THREE.Raycaster();
+
+
+function shoot(){
+
+ if(driving)
+  return;
+
+
+ const w=
+  currentWeapon();
+
+
+ if(w.ammo<=0){
+
+  showMsg(
+   "OUT OF AMMO"
+  );
+
+  return;
+ }
+
+
+ w.ammo--;
+
+ wanted=
+  Math.min(
+   5,
+   wanted+1
+  );
+
+
+ raycaster.setFromCamera(
+  new THREE.Vector2(0,0),
+  camera
+ );
+
+
+ let targets=[];
+
+
+ for(
+  let e of enemies
+ ){
+
+  if(!e.userData.dead)
+   targets.push(e);
+ }
+
+
+ for(
+  let p of police
+ ){
+
+  targets.push(
+   p.officer
+  );
+ }
+
+
+ let hits=
+  raycaster.intersectObjects(
+   targets,
+   true
+  );
+
+
+ if(hits.length){
+
+  let obj=
+   hits[0].object;
+
+
+  while(
+   obj.parent &&
+   !obj.userData.enemyRoot
+  ){
+
+   obj=obj.parent;
+  }
+
+
+  if(
+   obj.userData.enemyRoot
+  ){
+
+   if(
+    obj.userData.type===
+    "enemy"
+   ){
+
+    obj.userData.hp-=
+     w.damage;
+
+
+    if(
+     obj.userData.hp<=0
+    )
+     killEnemy(obj);
+   }
+
+
+   if(
+    obj.userData.type===
+    "police"
+   ){
+
+    wanted=5;
+
+    showMsg(
+     "POLICE HIT"
+    );
+   }
+  }
+ }
+
+
+ updateWeapon();
+}
+
+
+/* =========================================================
+   ENEMY AI
+========================================================= */
+
+let missionKills=0;
+
+
+function killEnemy(e){
+
+ if(e.userData.dead)
+  return;
+
+
+ e.userData.dead=true;
+
+ money+=100;
+
+ missionKills++;
+
+
+ e.traverse(
+  o=>{
+
+   if(o.isMesh)
+    o.material.color.set(
+     0x111111
+    );
+  }
+ );
+
+
+ setTimeout(
+  ()=>{
+
+   scene.remove(e);
+
+   let i=
+    enemies.indexOf(e);
+
+   if(i>=0)
+    enemies.splice(i,1);
+
+  },
+  400
+ );
+
+
+ checkMission("enemy");
+}
+
+
+function updateEnemies(){
+
+ for(
+  let e of enemies
+ ){
+
+  if(e.userData.dead)
+   continue;
+
+
+  let d=
+   dist(player,e);
+
+
+  if(d<35){
+
+   let dx=
+    player.position.x-
+    e.position.x;
+
+
+   let dz=
+    player.position.z-
+    e.position.z;
+
+
+   let len=
+    Math.hypot(
+     dx,dz
+    );
+
+
+   if(len>5){
+
+    e.position.x+=
+     dx/len*.035;
+
+    e.position.z+=
+     dz/len*.035;
+   }
+
+
+   e.userData.cool--;
+
+
+   if(
+    d<6 &&
+    e.userData.cool<=0
+   ){
+
+    hp-=8;
+
+    e.userData.cool=60;
+   }
+  }
+ }
+}
+
+
+/* =========================================================
+   POLICE
+========================================================= */
+
+function updatePolice(){
+
+ if(wanted<=0){
+
+  for(
+   let p of police
+  ){
+
+   scene.remove(
+    p.car
+   );
+
+   scene.remove(
+    p.officer
+   );
+  }
+
+
+  police.length=0;
+
+  return;
+ }
+
+
+ while(
+  police.length<wanted
+ ){
+
+  spawnPolice();
+ }
+
+
+ for(
+  let p of police
+ ){
+
+  let c=
+   p.car;
+
+
+  let dx=
+   player.position.x-
+   c.position.x;
+
+
+  let dz=
+   player.position.z-
+   c.position.z;
+
+
+  let d=
+   Math.hypot(
+    dx,dz
+   );
+
+
+  let target=
+   Math.atan2(
+    dx,dz
+   );
+
+
+  let diff=
+   Math.atan2(
+    Math.sin(
+     target-c.rotation.y
+    ),
+    Math.cos(
+     target-c.rotation.y
+    )
+   );
+
+
+  c.rotation.y+=
+   Math.max(
+    -.035,
+    Math.min(
+     .035,
+     diff
+    )
+   );
+
+
+  c.userData.speed+=
+   .008;
+
+  c.userData.speed*=.99;
+
+
+  c.userData.speed=
+   Math.min(
+    .32,
+    c.userData.speed
+   );
+
+
+  c.position.x+=
+   Math.sin(c.rotation.y)*
+   c.userData.speed;
+
+
+  c.position.z+=
+   Math.cos(c.rotation.y)*
+   c.userData.speed;
+
+
+  p.officer.position.set(
+   c.position.x,
+   0,
+   c.position.z
+  );
+
+
+  p.officer.userData.cool--;
+
+
+  if(
+   d<12 &&
+   p.officer.userData.cool<=0
+  ){
+
+   hp-=5;
+
+   p.officer.userData.cool=45;
+
+
+   if(hp<=0){
+
+    hp=100;
+
+    wanted=0;
+
+    player.position.set(
+     0,0,10
+    );
+
+    showMsg(
+     "BUSTED"
+    );
+   }
+  }
+ }
+}
+
+
+/* =========================================================
+   HELICOPTER
+========================================================= */
+
+function updateHelicopters(){
+
+ if(wanted>=4)
+  spawnHelicopter();
+
+
+ if(wanted<4){
+
+  for(
+   let h of helicopters
+  )
+   scene.remove(h);
+
+
+  helicopters.length=0;
+
+  return;
+ }
+
+
+ for(
+  let h of helicopters
+ ){
+
+  let dx=
+   player.position.x-
+   h.position.x;
+
+
+  let dz=
+   player.position.z-
+   h.position.z;
+
+
+  h.position.x+=
+   dx*.008;
+
+
+  h.position.z+=
+   dz*.008;
+
+
+  h.userData.rotor.rotation.y+=
+   .4;
+
+
+  h.userData.cool--;
+
+
+  if(
+   Math.hypot(dx,dz)<25 &&
+   h.userData.cool<=0
+  ){
+
+   hp-=10;
+
+   h.userData.cool=80;
+  }
+ }
+}
+
+
+/* =========================================================
+   MISSIONS
+========================================================= */
+
+let missionIndex=0;
+
+
+const missions=[
+ "Reach the blue marker",
+ "Steal a car",
+ "Defeat 3 enemies",
+ "Escape the police",
+ "Reach the green marker"
+];
+
+
+const marker=
+ new THREE.Mesh(
+  new THREE.CylinderGeometry(
+   3,3,.3,24
+  ),
+  new THREE.MeshStandardMaterial({
+   color:0x0088ff
+  })
+ );
+
+
+marker.position.set(
+ 55,.2,55
+);
+
+scene.add(marker);
+
+
+function checkMission(type){
+
+ if(
+  missionIndex===1 &&
+  type==="car"
+ ){
+
+  money+=300;
+
+  missionIndex++;
+
+  showMsg(
+   "MISSION COMPLETE<br>+$300"
+  );
+ }
+
+
+ if(
+  missionIndex===2 &&
+  type==="enemy" &&
+  missionKills>=3
+ ){
+
+  money+=500;
+
+  missionIndex++;
+
+  missionKills=0;
+
+  showMsg(
+   "MISSION COMPLETE<br>+$500"
+  );
+ }
+
+
+ if(
+  missionIndex===3 &&
+  type==="escape"
+ ){
+
+  money+=750;
+
+  missionIndex++;
+
+  marker.position.set(
+   -55,.2,-55
+  );
+
+  marker.material.color.set(
+   0x00ff55
+  );
+
+  showMsg(
+   "MISSION COMPLETE<br>+$750"
+  );
+ }
+}
+
+
+function updateMission(){
+
+ if(missionIndex===0){
+
+  document.getElementById(
+   "mission"
+  ).textContent=
+   "MISSION: Reach blue marker";
+
+
+  if(
+   dist(
+    player,
+    marker
+   )<6
+  ){
+
+   money+=250;
+
+   missionIndex++;
+
+   showMsg(
+    "MISSION COMPLETE<br>+$250"
+   );
+  }
+ }
+
+
+ else if(missionIndex===1){
+
+  document.getElementById(
+   "mission"
+  ).textContent=
+   "MISSION: Steal a car";
+ }
+
+
+ else if(missionIndex===2){
+
+  document.getElementById(
+   "mission"
+  ).textContent=
+   "MISSION: Defeat 3 enemies ("+
+   missionKills+
+   "/3)";
+ }
+
+
+ else if(missionIndex===3){
+
+  document.getElementById(
+   "mission"
+  ).textContent=
+   "MISSION: Escape police";
+
+
+  if(
+   wanted===0 &&
+   missionKills===0
+  ){
+
+   missionKills=999;
+
+   checkMission(
+    "escape"
+   );
+  }
+ }
+
+
+ else if(missionIndex===4){
+
+  document.getElementById(
+   "mission"
+  ).textContent=
+   "MISSION: Reach green marker";
+
+
+  if(
+   dist(
+    player,
+    marker
+   )<6
+  ){
+
+   money+=1500;
+
+   missionIndex=0;
+
+   missionKills=0;
+
+
+   marker.position.set(
+    (Math.random()-.5)*120,
+    .2,
+    (Math.random()-.5)*120
+   );
+
+
+   marker.material.color.set(
+    0x0088ff
+   );
+
+
+   showMsg(
+    "MISSION COMPLETE<br>+$1500"
+   );
+  }
+ }
+}
+
+
+/* =========================================================
+   WEAPON SHOP
+========================================================= */
+
+function buyRifle(){
+
+ if(weaponIndex===1){
+
+  showMsg(
+   "RIFLE EQUIPPED"
+  );
+
+  return;
+ }
+
+
+ if(money<1000){
+
+  showMsg(
+   "NEED $1000"
+  );
+
+  return;
+ }
+
+
+ money-=1000;
+
+ weaponIndex=1;
+
+ updateWeapon();
+
+
+ showMsg(
+  "RIFLE PURCHASED"
+ );
+}
+
+
+/* =========================================================
+   DAY NIGHT
+========================================================= */
+
+let gameTime=8;
+
+
+function updateDayNight(){
+
+ gameTime+=.002;
+
+
+ if(gameTime>=24)
+  gameTime=0;
+
+
+ let daylight=
+  Math.max(
+   0,
+   Math.sin(
+    (gameTime-6)*
+    Math.PI/12
+   )
+  );
+
+
+ sun.intensity=
+  .35+
+  daylight*1.7;
+
+
+ hemi.intensity=
+  .4+
+  daylight*1.3;
+
+
+ let r=
+  Math.floor(
+   25+daylight*100
+  );
+
+
+ let g=
+  Math.floor(
+   45+daylight*140
+  );
+
+
+ let b=
+  Math.floor(
+   65+daylight*150
+  );
+
+
+ scene.background.setRGB(
+  r/255,
+  g/255,
+  b/255
+ );
+
+
+ scene.fog.color.copy(
+  scene.background
+ );
+
+
+ let hour=
+  Math.floor(gameTime);
+
+
+ let min=
+  Math.floor(
+   (gameTime-hour)*60
+  );
+
+
+ document.getElementById(
+  "clock"
+ ).textContent=
+  String(hour).padStart(2,"0")+
+  ":"+
+  String(min).padStart(2,"0");
+}
+
+
+/* =========================================================
+   SAVE LOAD
+========================================================= */
+
+function saveGame(){
+
+ const save={
+  hp:hp,
+  money:money,
+  wanted:wanted,
+  weaponIndex:weaponIndex,
+  ammo:weapons.map(
+   w=>w.ammo
+  ),
+  missionIndex:missionIndex,
+  missionKills:missionKills,
+  playerX:player.position.x,
+  playerZ:player.position.z,
+  gameTime:gameTime
+ };
+
+
+ localStorage.setItem(
+  "openCityV6Fixed",
+  JSON.stringify(save)
+ );
+
+
+ showMsg(
+  "GAME SAVED"
+ );
+}
+
+
+function loadGame(){
+
+ let raw=
+  localStorage.getItem(
+   "openCityV6Fixed"
+  );
+
+
+ if(!raw){
+
+  showMsg(
+   "NO SAVE FOUND"
+  );
+
+  return;
+ }
+
+
+ let s=
+  JSON.parse(raw);
+
+
+ hp=
+  s.hp ?? 100;
+
+ money=
+  s.money ?? 500;
+
+ wanted=
+  s.wanted ?? 0;
+
+ weaponIndex=
+  s.weaponIndex ?? 0;
+
+
+ if(s.ammo){
+
+  for(
+   let i=0;
+   i<s.ammo.length;
+   i++
+  ){
+
+   if(weapons[i])
+    weapons[i].ammo=
+     s.ammo[i];
+  }
+ }
+
+
+ missionIndex=
+  s.missionIndex ?? 0;
+
+ missionKills=
+  s.missionKills ?? 0;
+
+
+ player.position.x=
+  s.playerX ?? 0;
+
+
+ player.position.z=
+  s.playerZ ?? 10;
+
+
+ gameTime=
+  s.gameTime ?? 8;
+
+
+ updateWeapon();
+
+
+ showMsg(
+  "GAME LOADED"
+ );
+}
+
+
+document.getElementById(
+ "save"
+).addEventListener(
+ "pointerdown",
+ saveGame
+);
+
+
+document.getElementById(
+ "load"
+).addEventListener(
+ "pointerdown",
+ loadGame
+);
+
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+function updateCamera(){
+
+ if(
+  driving &&
+  currentCar
+ ){
+
+  const c=
+   currentCar;
+
+
+  camera.position.x=
+   c.position.x-
+   Math.sin(camAngle)*9;
+
+
+  camera.position.y=
+   5.5;
+
+
+  camera.position.z=
+   c.position.z-
+   Math.cos(camAngle)*9;
+
+
+  camera.lookAt(
+   c.position.x,
+   1.3,
+   c.position.z
+  );
+
+ }else{
+
+  camera.position.x=
+   player.position.x-
+   Math.sin(camAngle)*9;
+
+
+  camera.position.y=
+   player.position.y+5.5;
+
+
+  camera.position.z=
+   player.position.z-
+   Math.cos(camAngle)*9;
+
+
+  camera.lookAt(
+   player.position.x,
+   player.position.y+2,
+   player.position.z
+  );
+ }
+}
+
+
+/* =========================================================
+   MINIMAP
+========================================================= */
+
+const map=
+ document.getElementById("map");
+
+const ctx=
+ map.getContext("2d");
+
+
+function drawMap(){
+
+ ctx.clearRect(
+  0,0,120,120
+ );
+
+
+ ctx.fillStyle=
+  "#172017";
+
+
+ ctx.fillRect(
+  0,0,120,120
+ );
+
+
+ ctx.strokeStyle=
+  "#555";
+
+
+ ctx.lineWidth=4;
+
+
+ for(
+  let x=-100;
+  x<=100;
+  x+=40
+ ){
+
+  let px=
+   60+x/3;
+
+
+  ctx.beginPath();
+
+  ctx.moveTo(px,0);
+
+  ctx.lineTo(px,120);
+
+  ctx.stroke();
+ }
+
+
+ for(
+  let z=-100;
+  z<=100;
+  z+=40
+ ){
+
+  let py=
+   60+z/3;
+
+
+  ctx.beginPath();
+
+  ctx.moveTo(0,py);
+
+  ctx.lineTo(120,py);
+
+  ctx.stroke();
+ }
+
+
+ /* PLAYER */
+
+ ctx.fillStyle=
+  "#00ffff";
+
+
+ let px=
+  60+player.position.x/3;
+
+
+ let py=
+  60+player.position.z/3;
+
+
+ ctx.beginPath();
+
+ ctx.arc(
+  px,py,4,0,Math.PI*2
+ );
+
+ ctx.fill();
+
+
+ /* ENEMIES */
+
+ ctx.fillStyle=
+  "#ff3333";
+
+
+ for(
+  let e of enemies
+ ){
+
+  if(e.userData.dead)
+   continue;
+
+
+  let x=
+   60+e.position.x/3;
+
+
+  let y=
+   60+e.position.z/3;
+
+
+  ctx.beginPath();
+
+  ctx.arc(
+   x,y,3,0,Math.PI*2
+  );
+
+  ctx.fill();
+ }
+
+
+ /* POLICE */
+
+ ctx.fillStyle=
+  "#ffffff";
+
+
+ for(
+  let p of police
+ ){
+
+  let x=
+   60+p.car.position.x/3;
+
+
+  let y=
+   60+p.car.position.z/3;
+
+
+  ctx.beginPath();
+
+  ctx.arc(
+   x,y,3,0,Math.PI*2
+  );
+
+  ctx.fill();
+ }
+
+
+ /* PEDESTRIANS */
+
+ ctx.fillStyle=
+  "#ffaa00";
+
+
+ for(
+  let p of pedestrians
+ ){
+
+  let x=
+   60+p.position.x/3;
+
+
+  let y=
+   60+p.position.z/3;
+
+
+  ctx.fillRect(
+   x-1,
+   y-1,
+   2,
+   2
+  );
+ }
+
+
+ /* MISSION */
+
+ ctx.fillStyle=
+  "#00ff55";
+
+
+ let mx=
+  60+marker.position.x/3;
+
+
+ let my=
+  60+marker.position.z/3;
+
+
+ ctx.beginPath();
+
+ ctx.arc(
+  mx,my,4,0,Math.PI*2
+ );
+
+ ctx.fill();
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+document.getElementById(
+ "fire"
+).addEventListener(
+ "pointerdown",
+ shoot
+);
+
+
+document.getElementById(
+ "jump"
+).addEventListener(
+ "pointerdown",
+ ()=>{
+
+  if(
+   !driving &&
+   onGround
+  ){
+
+   velocityY=.25;
+
+   onGround=false;
+  }
+ }
+);
+
+
+document.getElementById(
+ "run"
+).addEventListener(
+ "pointerdown",
+ ()=>running=true
+);
+
+
+document.getElementById(
+ "run"
+).addEventListener(
+ "pointerup",
+ ()=>running=false
+);
+
+
+document.getElementById(
+ "run"
+).addEventListener(
+ "pointercancel",
+ ()=>running=false
+);
+
+
+document.getElementById(
+ "weaponBtn"
+).addEventListener(
+ "pointerdown",
+ buyRifle
+);
+
+
+document.getElementById(
+ "enter"
+).addEventListener(
+ "pointerdown",
+ enterCar
+);
+
+
+document.getElementById(
+ "exit"
+).addEventListener(
+ "pointerdown",
+ exitCar
+);
+
+
+document.getElementById(
+ "gas"
+).addEventListener(
+ "pointerdown",
+ ()=>gas=true
+);
+
+
+document.getElementById(
+ "gas"
+).addEventListener(
+ "pointerup",
+ ()=>gas=false
+);
+
+
+document.getElementById(
+ "gas"
+).addEventListener(
+ "pointercancel",
+ ()=>gas=false
+);
+
+
+document.getElementById(
+ "brake"
+).addEventListener(
+ "pointerdown",
+ ()=>brake=true
+);
+
+
+document.getElementById(
+ "brake"
+).addEventListener(
+ "pointerup",
+ ()=>brake=false
+);
+
+
+document.getElementById(
+ "brake"
+).addEventListener(
+ "pointercancel",
+ ()=>brake=false
+);
+
+
+/* =========================================================
+   KEYBOARD
+========================================================= */
 
 addEventListener(
  "keydown",
  e=>{
 
-  keys[e.key.toLowerCase()]=true;
+  keys[
+   e.key.toLowerCase()
+  ]=true;
+
 
   if(
    e.key===" " &&
@@ -1885,9 +3180,11 @@ addEventListener(
    onGround
   ){
 
-   vy=.25;
+   velocityY=.25;
+
    onGround=false;
   }
+
 
   if(
    e.key.toLowerCase()==="e"
@@ -1899,36 +3196,33 @@ addEventListener(
     enterCar();
   }
 
+
   if(
    e.key.toLowerCase()==="f"
   )
    shoot();
 
-  if(
-   e.key.toLowerCase()==="q"
-  )
-   use();
 
   if(
-   ["1","2","3"].includes(e.key)
+   e.key==="1"
   ){
 
-   let n=+e.key-1;
+   weaponIndex=0;
 
-   if(
-    n<=weapon &&
-    n<weapons.length
-   ){
-
-    weapon=n;
-    updateWeapon();
-   }
+   updateWeapon();
   }
+
+
+  if(
+   e.key==="2"
+  )
+   buyRifle();
+
 
   if(
    e.key.toLowerCase()==="p"
   )
-   save();
+   saveGame();
  }
 );
 
@@ -1936,12 +3230,139 @@ addEventListener(
 addEventListener(
  "keyup",
  e=>{
-  keys[e.key.toLowerCase()]=false;
+
+  keys[
+   e.key.toLowerCase()
+  ]=false;
  }
 );
 
 
-/* RESIZE */
+/* =========================================================
+   WANTED SYSTEM
+========================================================= */
+
+let wantedTimer=0;
+
+
+function wantedSystem(){
+
+ if(wanted>0){
+
+  wantedTimer++;
+
+
+  if(
+   wantedTimer>1200 &&
+   police.length===0
+  ){
+
+   wanted--;
+
+   wantedTimer=0;
+
+
+   if(wanted===0){
+
+    checkMission(
+     "escape"
+    );
+   }
+  }
+
+ }else{
+
+  wantedTimer=0;
+ }
+}
+
+
+/* =========================================================
+   UI
+========================================================= */
+
+function updateUI(){
+
+ document.getElementById(
+  "hp"
+ ).textContent=
+  Math.max(
+   0,
+   hp
+  );
+
+
+ document.getElementById(
+  "money"
+ ).textContent=
+  Math.floor(money);
+
+
+ document.getElementById(
+  "wanted"
+ ).textContent=
+  wanted;
+
+
+ document.getElementById(
+  "police"
+ ).textContent=
+  police.length;
+
+
+ document.getElementById(
+  "heli"
+ ).textContent=
+  helicopters.length;
+
+
+ if(!driving){
+
+  let c=
+   nearestCar();
+
+
+  document.getElementById(
+   "enter"
+  ).style.display=
+   c?"block":"none";
+ }
+}
+
+
+function showMsg(t){
+
+ const m=
+  document.getElementById(
+   "msg"
+  );
+
+
+ m.innerHTML=t;
+
+ m.style.display=
+  "block";
+
+
+ clearTimeout(
+  showMsg.timer
+ );
+
+
+ showMsg.timer=
+  setTimeout(
+   ()=>{
+    m.style.display=
+     "none";
+   },
+   1100
+  );
+}
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
 
 addEventListener(
  "resize",
@@ -1950,7 +3371,9 @@ addEventListener(
   camera.aspect=
    innerWidth/innerHeight;
 
+
   camera.updateProjectionMatrix();
+
 
   renderer.setSize(
    innerWidth,
@@ -1960,33 +3383,54 @@ addEventListener(
 );
 
 
-/* GAME LOOP */
+/* =========================================================
+   START
+========================================================= */
+
+updateWeapon();
+
+updateCamera();
+
+drawMap();
+
+
+/* =========================================================
+   GAME LOOP
+========================================================= */
 
 function loop(){
 
  requestAnimationFrame(loop);
 
+
  walk();
+
  drive();
 
- updateWorld();
+ updateTraffic();
 
- policeAI();
- heliAI();
+ updatePedestrians();
 
- wantedUpdate();
+ updateEnemies();
+
+ updatePolice();
+
+ updateHelicopters();
+
+ wantedSystem();
 
  updateMission();
 
- day();
+ updateDayNight();
 
- ui();
+ updateUI();
 
  updateWeapon();
 
- camUpdate();
+ updateCamera();
 
  drawMap();
+
 
  renderer.render(
   scene,
@@ -1995,8 +3439,6 @@ function loop(){
 }
 
 
-setMarker();
-updateWeapon();
 loop();
 
 </script>
